@@ -1,8 +1,9 @@
 package com.segunfamisa.sample.bottomnav.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.widget.NestedScrollView;
@@ -10,15 +11,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatTextView;
 import android.view.View;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 import com.segunfamisa.sample.bottomnav.R;
 import com.segunfamisa.sample.bottomnav.helpers.InputValidation;
 import com.segunfamisa.sample.bottomnav.model.User;
-import com.segunfamisa.sample.bottomnav.sql.DatabaseHelper;
 
-public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
+public class SignUpActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private final AppCompatActivity activity = RegisterActivity.this;
+    private final AppCompatActivity activity = SignUpActivity.this;
 
     private NestedScrollView nestedScrollView;
 
@@ -32,22 +37,25 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private TextInputEditText textInputEditTextPassword;
     private TextInputEditText textInputEditTextConfirmPassword;
 
-    private AppCompatButton appCompatButtonRegister;
+    private AppCompatButton appCompatButtonSignUp;
     private AppCompatTextView appCompatTextViewLoginLink;
 
+
     private InputValidation inputValidation;
-    private DatabaseHelper databaseHelper;
     private User user;
+    private FirebaseAuth auth;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register);
+        setContentView(R.layout.activity_signup);
         getSupportActionBar().hide();
 
         initViews();
         initListeners();
         initObjects();
+
+
     }
 
     /**
@@ -66,9 +74,11 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         textInputEditTextPassword = (TextInputEditText) findViewById(R.id.textInputEditTextPassword);
         textInputEditTextConfirmPassword = (TextInputEditText) findViewById(R.id.textInputEditTextConfirmPassword);
 
-        appCompatButtonRegister = (AppCompatButton) findViewById(R.id.appCompatButtonRegister);
+        appCompatButtonSignUp = (AppCompatButton) findViewById(R.id.appCompatButtonSignUp);
 
         appCompatTextViewLoginLink = (AppCompatTextView) findViewById(R.id.appCompatTextViewLoginLink);
+
+
 
     }
 
@@ -76,8 +86,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
      * This method is to initialize listeners
      */
     private void initListeners() {
-        appCompatButtonRegister.setOnClickListener(this);
+        appCompatButtonSignUp.setOnClickListener(this);
         appCompatTextViewLoginLink.setOnClickListener(this);
+
 
     }
 
@@ -86,8 +97,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
      */
     private void initObjects() {
         inputValidation = new InputValidation(activity);
-        databaseHelper = new DatabaseHelper(activity);
         user = new User();
+        auth = FirebaseAuth.getInstance();
 
     }
 
@@ -101,8 +112,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View v) {
         switch (v.getId()) {
 
-            case R.id.appCompatButtonRegister:
-                postDataToSQLite();
+            case R.id.appCompatButtonSignUp:
+                checkInformation();
+                createUser();
                 break;
 
             case R.id.appCompatTextViewLoginLink:
@@ -111,10 +123,40 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
+    //TODO already exist user uyarısı/kontrolu yok!
+
+    private void createUser() {
+
+        String email = textInputEditTextEmail.getText().toString().trim();
+        String password = textInputEditTextPassword.getText().toString().trim();
+
+        auth.createUserWithEmailAndPassword(email,password)
+                .addOnCompleteListener(SignUpActivity.this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        Toast.makeText(SignUpActivity.this,"createUserWithEmail:onComplete"
+                                        + task.isSuccessful(),Toast.LENGTH_SHORT).show();
+
+                        if (!task.isSuccessful()){
+
+                            Toast.makeText(SignUpActivity.this,"Authentication failed."
+                                    +task.getException(),Toast.LENGTH_SHORT).show();
+
+                        }
+                        else
+                        {
+                            startActivity(new Intent(SignUpActivity.this,MainActivity.class));
+                            finish();
+                        }
+
+                    }
+                });
+    }
+
     /**
      * This method is to validate the input text fields and post data to SQLite
      */
-    private void postDataToSQLite() {
+    private void checkInformation() {
         if (!inputValidation.isInputEditTextFilled(textInputEditTextName, textInputLayoutName, getString(R.string.error_message_name))) {
             return;
         }
@@ -130,24 +172,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         if (!inputValidation.isInputEditTextMatches(textInputEditTextPassword, textInputEditTextConfirmPassword,
                 textInputLayoutConfirmPassword, getString(R.string.error_password_match))) {
             return;
-        }
-
-        if (!databaseHelper.checkUser(textInputEditTextEmail.getText().toString().trim())) {
-
-            user.setName(textInputEditTextName.getText().toString().trim());
-            user.setEmail(textInputEditTextEmail.getText().toString().trim());
-            user.setPassword(textInputEditTextPassword.getText().toString().trim());
-
-            databaseHelper.addUser(user);
-
-            // Snack Bar to show success message that record saved successfully
-            Snackbar.make(nestedScrollView, getString(R.string.success_message), Snackbar.LENGTH_LONG).show();
-            emptyInputEditText();
-
-
-        } else {
-            // Snack Bar to show error message that record already exists
-            Snackbar.make(nestedScrollView, getString(R.string.error_email_exists), Snackbar.LENGTH_LONG).show();
         }
 
 

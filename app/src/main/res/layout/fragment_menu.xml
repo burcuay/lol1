@@ -14,7 +14,7 @@
             android:layout_height="400dp"
             android:orientation="vertical" />
     </android.support.v4.widget.NestedScrollView>
-    <include layout="@layout/graphhopper_main"/>
+
 
     <TextView
         android:id="@+id/text"

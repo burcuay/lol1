@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "786501560014",
+    "firebase_url": "https://android-proje-v1.firebaseio.com",
+    "project_id": "android-proje-v1",
+    "storage_bucket": "android-proje-v1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:786501560014:android:55d6f5dcd4730150",
+        "android_client_info": {
+          "package_name": "com.segunfamisa.sample.bottomnav"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "786501560014-t8fqaibtcdgerlam2g6ik70jmagffmq2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDVUTutgKdqqV9t4A9WH1jgxoYPbhR8818"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
