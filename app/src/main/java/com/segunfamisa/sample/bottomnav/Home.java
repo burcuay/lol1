@@ -1,5 +1,6 @@
 package com.segunfamisa.sample.bottomnav;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
@@ -11,16 +12,32 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
-public class Home extends AppCompatActivity {
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.segunfamisa.sample.bottomnav.activities.LoginActivity;
+
+public class Home extends AppCompatActivity  {
+
+    private final AppCompatActivity activity = Home.this;
+
     private static final String SELECTED_ITEM = "arg_selected_item";
 
     private BottomNavigationView mBottomNav;
     private int mSelectedItem;
 
+    //private Button logoutBut;
+
+    private FirebaseAuth auth;
+    private FirebaseAuth.AuthStateListener authListener;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
 
         mBottomNav = (BottomNavigationView) findViewById(R.id.navigation);
         mBottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -39,6 +56,28 @@ public class Home extends AppCompatActivity {
             selectedItem = mBottomNav.getMenu().getItem(0);
         }
         selectFragment(selectedItem);
+
+        //firebase user&auth
+
+        auth = FirebaseAuth.getInstance();
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        authListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user == null) {
+                    // user auth state is changed - user is null
+                    // launch login activity
+                    startActivity(new Intent(Home.this, LoginActivity.class));
+                    finish();
+                }
+            }
+        };
+
+
+
+
     }
 
     @Override
@@ -77,6 +116,7 @@ public class Home extends AppCompatActivity {
             case R.id.menu_profile:
                 frag = MenuFragmentProfile.newInstance(getString(R.string.text_profile),
                         getColorFromRes(R.color.color_profile));
+
                 break;
         }
 
@@ -98,6 +138,7 @@ public class Home extends AppCompatActivity {
         }
     }
 
+
     private void updateToolbarText(CharSequence text) {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -108,4 +149,6 @@ public class Home extends AppCompatActivity {
     private int getColorFromRes(@ColorRes int resId) {
         return ContextCompat.getColor(this, resId);
     }
+
+
 }

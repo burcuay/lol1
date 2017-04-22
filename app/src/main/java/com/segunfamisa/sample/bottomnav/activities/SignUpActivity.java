@@ -10,6 +10,7 @@ import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatTextView;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
 
@@ -18,7 +19,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.segunfamisa.sample.bottomnav.R;
-import com.segunfamisa.sample.bottomnav.helpers.InputValidation;
 import com.segunfamisa.sample.bottomnav.model.User;
 
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener {
@@ -41,7 +41,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     private AppCompatTextView appCompatTextViewLoginLink;
 
 
-    private InputValidation inputValidation;
     private User user;
     private FirebaseAuth auth;
 
@@ -96,7 +95,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
      * This method is to initialize objects to be used
      */
     private void initObjects() {
-        inputValidation = new InputValidation(activity);
+
         user = new User();
         auth = FirebaseAuth.getInstance();
 
@@ -113,7 +112,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         switch (v.getId()) {
 
             case R.id.appCompatButtonSignUp:
-                checkInformation();
                 createUser();
                 break;
 
@@ -127,8 +125,33 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
     private void createUser() {
 
+        String name = textInputEditTextName.getText().toString().trim();
         String email = textInputEditTextEmail.getText().toString().trim();
-        String password = textInputEditTextPassword.getText().toString().trim();
+        String password = textInputEditTextPassword.getText().toString();
+        String password2 = textInputEditTextConfirmPassword.getText().toString();
+
+
+        //validation control
+        if (TextUtils.isEmpty(name)){
+            Toast.makeText(getApplicationContext(), "Enter name!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (TextUtils.isEmpty(email)){
+            Toast.makeText(getApplicationContext(), "Enter email address!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (TextUtils.isEmpty(password)){
+            Toast.makeText(getApplicationContext(), "Enter password!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (TextUtils.isEmpty(password2)){
+            Toast.makeText(getApplicationContext(), "Enter confirm password!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (!password2.equals(password)){
+            Toast.makeText(getApplicationContext(), "Password does not match!", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         auth.createUserWithEmailAndPassword(email,password)
                 .addOnCompleteListener(SignUpActivity.this, new OnCompleteListener<AuthResult>() {
@@ -153,37 +176,5 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                 });
     }
 
-    /**
-     * This method is to validate the input text fields and post data to SQLite
-     */
-    private void checkInformation() {
-        if (!inputValidation.isInputEditTextFilled(textInputEditTextName, textInputLayoutName, getString(R.string.error_message_name))) {
-            return;
-        }
-        if (!inputValidation.isInputEditTextFilled(textInputEditTextEmail, textInputLayoutEmail, getString(R.string.error_message_email))) {
-            return;
-        }
-        if (!inputValidation.isInputEditTextEmail(textInputEditTextEmail, textInputLayoutEmail, getString(R.string.error_message_email))) {
-            return;
-        }
-        if (!inputValidation.isInputEditTextFilled(textInputEditTextPassword, textInputLayoutPassword, getString(R.string.error_message_password))) {
-            return;
-        }
-        if (!inputValidation.isInputEditTextMatches(textInputEditTextPassword, textInputEditTextConfirmPassword,
-                textInputLayoutConfirmPassword, getString(R.string.error_password_match))) {
-            return;
-        }
 
-
-    }
-
-    /**
-     * This method is to empty all input edit text
-     */
-    private void emptyInputEditText() {
-        textInputEditTextName.setText(null);
-        textInputEditTextEmail.setText(null);
-        textInputEditTextPassword.setText(null);
-        textInputEditTextConfirmPassword.setText(null);
-    }
 }

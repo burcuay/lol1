@@ -9,6 +9,7 @@ import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatTextView;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
 
@@ -17,7 +18,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.segunfamisa.sample.bottomnav.R;
-import com.segunfamisa.sample.bottomnav.helpers.InputValidation;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -35,8 +35,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private AppCompatButton appCompatButtonGoogleLogin;
 
     private AppCompatTextView textViewLinkRegister;
-
-    private InputValidation inputValidation;
 
     private FirebaseAuth auth;
 
@@ -59,7 +57,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         initViews();
         initListeners();
-        initObjects();
+
     }
 
     /**
@@ -92,15 +90,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         appCompatButtonGoogleLogin.setOnClickListener(this);
     }
 
-    /**
-     * This method is to initialize objects to be used
-     */
-    private void initObjects() {
-
-        inputValidation = new InputValidation(activity);
-
-
-    }
 
     /**
      * This implemented method is to listen the click on view
@@ -111,7 +100,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.appCompatButtonLogin:
-                checkInformation();
                 authenticateUser();
                 break;
             case R.id.textViewLinkRegister:
@@ -124,12 +112,25 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void authenticateUser() {
 
+
         String email = textInputEditTextEmail.getText().toString();
         String password = textInputEditTextPassword.getText().toString();
+
+        //validation control
+
+        if (TextUtils.isEmpty(email)){
+            Toast.makeText(getApplicationContext(), "Enter email address!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (TextUtils.isEmpty(password)){
+            Toast.makeText(getApplicationContext(), "Enter password!", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         auth.signInWithEmailAndPassword(email,password).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
+
 
                 if (!task.isSuccessful()){
 
@@ -146,30 +147,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 }
             }
         });
-    }
-
-    /**
-     * This method is to validate the input text fields and verify login credentials from SQLite
-     */
-    private void checkInformation() {
-        if (!inputValidation.isInputEditTextFilled(textInputEditTextEmail, textInputLayoutEmail, getString(R.string.error_message_email))) {
-            return;
-        }
-        if (!inputValidation.isInputEditTextEmail(textInputEditTextEmail, textInputLayoutEmail, getString(R.string.error_message_email))) {
-            return;
-        }
-        else if (!inputValidation.isInputEditTextFilled(textInputEditTextPassword, textInputLayoutPassword, getString(R.string.error_message_email))) {
-            return;
-        }
-
-    }
-
-    /**
-     * This method is to empty all input edit text
-     */
-    private void emptyInputEditText() {
-        textInputEditTextEmail.setText(null);
-        textInputEditTextPassword.setText(null);
     }
 
 

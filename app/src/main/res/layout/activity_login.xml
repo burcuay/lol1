@@ -76,13 +76,12 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
-        <android.support.v7.widget.AppCompatButton
+        <com.google.android.gms.common.SignInButton
             android:id="@+id/googleSignUp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
-            android:gravity="center"
-            android:text="@string/text_google_signup"
+            android:layout_gravity="center"
             android:textAllCaps="false"
             android:textSize="16dp" />
     </android.support.v7.widget.LinearLayoutCompat>
