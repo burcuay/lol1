@@ -32,7 +32,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private TextInputEditText textInputEditTextPassword;
 
     private AppCompatButton appCompatButtonLogin;
-    private AppCompatButton appCompatButtonGoogleLogin;
 
     private AppCompatTextView textViewLinkRegister;
 
@@ -77,7 +76,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         textViewLinkRegister = (AppCompatTextView) findViewById(R.id.textViewLinkRegister);
 
-        appCompatButtonGoogleLogin = (AppCompatButton) findViewById(R.id.googleSignUp);
 
     }
 
@@ -87,7 +85,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private void initListeners() {
         appCompatButtonLogin.setOnClickListener(this);
         textViewLinkRegister.setOnClickListener(this);
-        appCompatButtonGoogleLogin.setOnClickListener(this);
+
     }
 
 

@@ -50,10 +50,15 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.activity_signup);
         getSupportActionBar().hide();
 
+        auth = FirebaseAuth.getInstance();
+
+        if (auth.getCurrentUser() != null) {
+            startActivity(new Intent(SignUpActivity.this, MainActivity.class));
+            finish();
+        }
+
         initViews();
         initListeners();
-        initObjects();
-
 
     }
 
@@ -78,29 +83,15 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         appCompatTextViewLoginLink = (AppCompatTextView) findViewById(R.id.appCompatTextViewLoginLink);
 
 
-
     }
 
-    /**
-     * This method is to initialize listeners
-     */
+
     private void initListeners() {
         appCompatButtonSignUp.setOnClickListener(this);
         appCompatTextViewLoginLink.setOnClickListener(this);
 
 
     }
-
-    /**
-     * This method is to initialize objects to be used
-     */
-    private void initObjects() {
-
-        user = new User();
-        auth = FirebaseAuth.getInstance();
-
-    }
-
 
     /**
      * This implemented method is to listen the click on view
@@ -121,7 +112,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    //TODO already exist user uyarısı/kontrolu yok!
 
     private void createUser() {
 
